@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swe645-hw3-survey
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: swe645-hw3-survey
+  template:
+    metadata:
+      labels:
+        app: swe645-hw3-survey
+    spec:
+      containers:
+      - name: swe645-hw3-survey-container
+        image: princekarma/swe645-hw3-survey:latest
+        ports:
+        - containerPort: 80
