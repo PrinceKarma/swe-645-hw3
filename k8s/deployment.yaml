@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: swe645-hw3-survey-container
-        image: princekarma/swe645-hw3-survey:latest
+        image: princekarma/swe645-hw3:latest
         ports:
         - containerPort: 80
