@@ -80,6 +80,7 @@ pipeline {
                 }
             }
         }
+    }
     
     post {
         success {
@@ -106,7 +107,6 @@ pipeline {
                     
                     // Clean up any dangling images
                     sh "docker image prune -f || true"
-
                 } catch (Exception e) {
                     echo "Cleanup failed: ${e.getMessage()}"
                 }
