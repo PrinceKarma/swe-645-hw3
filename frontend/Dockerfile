@@ -21,6 +21,11 @@ FROM nginx:1.25-alpine
 # Copy the build output from the build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
+# Remove the default Nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
+# Copy our  Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d
+
 # Expose port 80
 EXPOSE 80
 
