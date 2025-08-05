@@ -3,7 +3,8 @@ pipeline {
     
     environment {
         DOCKERHUB_USER = "princekarma"
-        IMAGE_NAME = "swe645-hw3"
+        BACKEND_IMAGE_NAME = "swe645-hw3"
+        FRONTEND_IMAGE_NAME = "swe645-hw3-frontend"
         IMAGE_TAG = "latest"
         GITHUB_REPO = "PrinceKarma/swe-645-hw3"
         DEPLOYMENT_YAML = "k8s/deployment.yaml"
@@ -17,64 +18,83 @@ pipeline {
             }
         }
         
-        stage('Build Application') {
+        stage('Build Backend Application') {
             steps {
                 script {
                     echo 'Building Spring Boot application...'
-                    // Clean and build the application
                     sh './mvnw clean package -DskipTests'
-                    
-                    // Verify JAR file was created
                     sh 'ls -la target/*.jar'
                 }
             }
         }
-        
-        stage('Build Docker Image') {
+
+        stage('Build Backend Docker Image') {
             steps {
                 script {
-                    echo 'Building Docker image...'
-                    dockerImage = docker.build("${DOCKERHUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}")
-                    dockerImage.tag("${env.BUILD_NUMBER}")
-                    dockerImage.tag("build-${env.BUILD_NUMBER}")
+                    echo 'Building Backend Docker image...'
+                    backendImage = docker.build("${DOCKERHUB_USER}/${BACKEND_IMAGE_NAME}:${IMAGE_TAG}")
+                    backendImage.tag("${env.BUILD_NUMBER}")
+                    backendImage.tag("build-${env.BUILD_NUMBER}")
                 }
             }
         }
-        
-        stage('Push to Docker Hub') {
+
+        stage('Push Backend to Docker Hub') {
             steps {
                 script {
-                    echo 'Pushing Docker image to Docker Hub...'
+                    echo 'Pushing Backend Docker image to Docker Hub...'
                     docker.withRegistry('https://registry.hub.docker.com', 'DockerCreds') {
-                        dockerImage.push("${IMAGE_TAG}")
-                        dockerImage.push("${env.BUILD_NUMBER}")
-                        dockerImage.push("build-${env.BUILD_NUMBER}")
+                        backendImage = docker.image("${DOCKERHUB_USER}/${BACKEND_IMAGE_NAME}")
+                        backendImage.push("${IMAGE_TAG}")
+                        backendImage.push("${env.BUILD_NUMBER}")
+                        backendImage.push("build-${env.BUILD_NUMBER}")
                     }
                 }
             }
         }
         
+        stage('Build Frontend Docker Image') {
+            steps {
+                script {
+                    echo 'Building Frontend Docker image...'
+                    frontendImage = docker.build("${DOCKERHUB_USER}/${FRONTEND_IMAGE_NAME}:${IMAGE_TAG}", "frontend")
+                    frontendImage.tag("${env.BUILD_NUMBER}")
+                    frontendImage.tag("build-${env.BUILD_NUMBER}")
+                }
+            }
+        }
+        
+        stage('Push Frontend to Docker Hub') {
+            steps {
+                script {
+                    echo 'Pushing Frontend Docker image to Docker Hub...'
+                    docker.withRegistry('https://registry.hub.docker.com', 'DockerCreds') {
+                        frontendImage = docker.image("${DOCKERHUB_USER}/${FRONTEND_IMAGE_NAME}")
+                        frontendImage.push("${IMAGE_TAG}")
+                        frontendImage.push("${env.BUILD_NUMBER}")
+                        frontendImage.push("build-${env.BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+
         stage('Update Kubernetes Deployment') {
             steps {
                 script {
                     echo 'Deploying to Kubernetes...'
                     withCredentials([file(credentialsId: 'KubeCreds', variable: 'KUBECONFIG')]) {
-                        // Update the deployment YAML with the new image tag
                         sh """
-                            sed -i 's|${DOCKERHUB_USER}/${IMAGE_NAME}:latest|${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}|g' ${DEPLOYMENT_YAML}
+                            sed -i 's|${DOCKERHUB_USER}/${BACKEND_IMAGE_NAME}:latest|${DOCKERHUB_USER}/${BACKEND_IMAGE_NAME}:${env.BUILD_NUMBER}|g' ${DEPLOYMENT_YAML}
+                            sed -i 's|${DOCKERHUB_USER}/${FRONTEND_IMAGE_NAME}:latest|${DOCKERHUB_USER}/${FRONTEND_IMAGE_NAME}:${env.BUILD_NUMBER}|g' ${DEPLOYMENT_YAML}
                         """
                         
-                        // Apply Kubernetes configurations
                         sh "kubectl apply -f ${DEPLOYMENT_YAML}"
                         sh "kubectl apply -f ${SERVICE_YAML}"
                         
-                        // Wait for deployment to complete
                         sh "kubectl rollout status deployment/swe645-hw3-survey --timeout=300s"
                         
-                        // Verify pods are running
                         sh "kubectl get pods -l app=swe645-hw3-survey"
                         
-                        // Get service information
                         sh "kubectl get service swe645-hw3-survey-service"
                     }
                 }
@@ -86,9 +106,8 @@ pipeline {
         success {
             echo 'Pipeline completed successfully!'
             echo "Spring Boot application built and tested"
-            echo "Docker image ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} pushed to Docker Hub"
+            echo "Docker images pushed to Docker Hub"
             echo "Application deployed to Kubernetes cluster"
-            echo "Service available on NodePort 30080"
         }
         
         failure {
@@ -101,11 +120,13 @@ pipeline {
             script {
                 try {
                     // Clean up local Docker images to save space
-                    sh "docker rmi ${DOCKERHUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} || true"
-                    sh "docker rmi ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} || true"
-                    sh "docker rmi ${DOCKERHUB_USER}/${IMAGE_NAME}:build-${env.BUILD_NUMBER} || true"
+                    sh "docker rmi ${DOCKERHUB_USER}/${BACKEND_IMAGE_NAME}:${IMAGE_TAG} || true"
+                    sh "docker rmi ${DOCKERHUB_USER}/${BACKEND_IMAGE_NAME}:${env.BUILD_NUMBER} || true"
+                    sh "docker rmi ${DOCKERHUB_USER}/${BACKEND_IMAGE_NAME}:build-${env.BUILD_NUMBER} || true"
+                    sh "docker rmi ${DOCKERHUB_USER}/${FRONTEND_IMAGE_NAME}:${IMAGE_TAG} || true"
+                    sh "docker rmi ${DOCKERHUB_USER}/${FRONTEND_IMAGE_NAME}:${env.BUILD_NUMBER} || true"
+                    sh "docker rmi ${DOCKERHUB_USER}/${FRONTEND_IMAGE_NAME}:build-${env.BUILD_NUMBER} || true"
                     
-                    // Clean up any dangling images
                     sh "docker image prune -f || true"
                 } catch (Exception e) {
                     echo "Cleanup failed: ${e.getMessage()}"
