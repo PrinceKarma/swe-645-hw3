@@ -1,65 +1,267 @@
+/* Styles and Variables */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #4F46E5;
+  --primary-hover: #4338CA;
+  --secondary-color: #6B7280;
+  --danger-color: #EF4444;
+  --danger-hover: #DC2626;
+  --background-color: #F9FAFB;
+  --card-background: #FFFFFF;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --border-color: #E5E7EB;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --border-radius: 0.5rem;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+}
+
+/* Layout */
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .App-header {
-  background-color: #282c34;
-  padding: 20px;
-  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--card-background);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+.App-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
 }
 
 main {
-  padding: 20px;
-}
-
-.add-new-button {
-  margin-bottom: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.survey-table {
+  flex-grow: 1;
+  padding: 2rem;
+  max-width: 1200px;
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.survey-table th, .survey-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.survey-table th {
-  background-color: #f2f2f2;
-}
-
-.edit-button, .delete-button {
-  margin-right: 10px;
-  padding: 5px 10px;
+/* Buttons */
+.button-primary, .button-secondary, .icon-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.625rem 1rem;
   cursor: pointer;
+  transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.survey-form {
+.button-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+.button-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.button-secondary {
+  background-color: var(--card-background);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.button-secondary:hover {
+  background-color: #F3F4F6;
+}
+
+/*  Home Page  */
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.survey-count h3 {
+    margin: 0;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/*  Survey (Card View)  */
+.survey-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.survey-card {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  max-width: 500px;
-  margin: auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.survey-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.survey-card-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.survey-card-header h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+}
+.survey-card-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.survey-card-body {
+  padding: 1rem;
+  flex-grow: 1;
+}
+.survey-card-body p {
+    margin: 0;
+}
+
+.survey-card-actions {
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.icon-button {
+    background: transparent;
+    padding: 0.5rem;
+    border-radius: 999px;
+    color: var(--secondary-color);
+}
+.icon-button:hover {
+    background-color: #F3F4F6;
+    color: var(--text-primary);
+}
+.icon-button.delete-button:hover {
+    background-color: #FEF2F2;
+    color: var(--danger-color);
+}
+.icon-button span {
+    display: none; 
+}
+
+
+/*  Form Styles  */
+.form-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.survey-form h2 {
+    margin-top: 0;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
 .survey-form input, .survey-form select {
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 16px;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: #F9FAFB;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.survey-form input:focus, .survey-form select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
-.form-buttons {
-  margin-top: 20px;
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
-.save-button, .cancel-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-right: 10px;
+/* --- Detail View --- */
+.detail-container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.detail-header h2 {
+    margin: 0;
+}
+
+.detail-content {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.detail-card {
+    background: var(--card-background);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+.detail-card h3 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+}
+.detail-card p {
+    margin: 0.5rem 0;
+}
+.detail-card p strong {
+    color: var(--text-primary);
 }
