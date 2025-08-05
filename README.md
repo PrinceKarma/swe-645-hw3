@@ -119,6 +119,27 @@ API File Descriptions
 
 -   `GlobalExceptionHandler.java`: This class handles exceptions and formats error responses.
 
+Frontend File Descriptions
+-----------------
+-   `frontend/package.json`: This is the core configuration file for the React project. It lists all the necessary dependencies like react and axios, and defines the command-line scripts  used to run and build the application.
+
+-   `frontend/src/App.js`: This is the main component that manages the overall state, fetches data from the backend, and decides whether to show the survey list, the form for adding/editing, or the detailed view of a single survey.
+
+-   `SurveyList.js`: Displays all the surveys in a card layout.
+
+-   `SurveyForm.js`: Provides the form for creating and editing surveys.
+
+-   `SurveyDetail.js`: Shows all the information for a single survey.
+
+-   `SurveyCount.js`: A component that displays the total number of surveys.
+
+-   `frontend/src/services/api.js`: This file configures axios, and is for making API calls to the Spring Boot backend.
+
+-   `frontend/Dockerfile`: This file contains the instructions to package the React app into a Docker container.
+
+-   `frontend/nginx.conf`: Configures Nginx to serve the React application and create proxy API requests to the backend container.
+
+
 * * * * *
 
 API Endpoints
