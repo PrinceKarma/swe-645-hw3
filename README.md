@@ -5,6 +5,7 @@ This project is a Spring Boot microservice for managing student survey data. It 
 
 * * * * *
 ## Links:
+ - Survey Frontend: http://ec2-13-223-116-1.compute-1.amazonaws.com:30081/
  - API: http://ec2-13-223-116-1.compute-1.amazonaws.com:30080/api/surveys
  - Rancher: https://ec2-13-223-116-1.compute-1.amazonaws.com/dashboard/home
  - Jenkins: http://ec2-34-236-60-189.compute-1.amazonaws.com:8080/
@@ -69,6 +70,22 @@ Create the following directory structure:
 │   └── test/
 │       └── java/edu/gmu/swe_645_hw3/
 │           └── Swe645Hw3ApplicationTests.java
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── SurveyList.js
+│   │   │   ├── SurveyForm.js
+│   │   │   └── ... (other React components)
+│   │   ├── App.js
+│   │   └── index.js
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── package.json
+├── k8s/
+│   ├── deployment.yaml
+│   └── service.yaml
 ├── .gitignore
 ├── mvnw
 ├── mvnw.cmd
@@ -77,7 +94,7 @@ Create the following directory structure:
 
 ```
 
-File Descriptions
+API File Descriptions
 -----------------
 
 -   `pom.xml`: This file manages the project's dependencies and build configurations.
@@ -205,6 +222,25 @@ The base URL for all endpoints is `/api/surveys`.
 
 * * * * *
 
+Frontend Application with React
+-------------
+
+The frontend is a single-page application (SPA) built with React. It provides a full-featured user interface for all CRUD operations.
+
+- **Features**:
+    - View all surveys in a card-based layout.
+    - Create new surveys using a survey form.
+    - Edit existing surveys.
+    - Delete surveys.
+    - View the complete details of any survey.
+    - Display a live count of the total number of surveys.
+- **Technologies**:
+    - **React**: For building the user interface components.
+    - **Axios**: For making HTTP requests to the backend API.
+    - **Nginx**: A lightweight web server used inside the Docker container to serve the static React files and proxy API requests.
+
+* * * * *
+
 Database Setup
 --------------
 
@@ -327,6 +363,7 @@ We will first set up the Rancher management server and then use it to provision 
         * **Type**: `HTTP` (Port 80) | **Source**: `Anywhere`
         * **Type**: `HTTPS` (Port 443) | **Source**: `Anywhere`
         * **Type**: `Custom TCP` (Port 30080) | **Source**: `Anywhere`
+        * **Type**: `Custom TCP` (Port 30081) | **Source**: `Anywhere`
     * **Assign an Elastic IP**: After the instance is running, assign an Elastic IP address to it so its public IP address does not change.
 
 
